@@ -1,87 +1,71 @@
 package com.ruiwenliu.kotlin.moudle.base
 
-import android.app.ProgressDialog
 import android.os.Bundle
-import android.util.Log
-import android.view.Window
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.ruiwenliu.kotlin.R
-import com.ruiwenliu.kotlin.moudle.base.bean.BaseBean
-import com.ruiwenliu.kotlin.moudle.base.dialog.LoadingDialog
-import com.ruiwenliu.kotlin.moudle.base.presenter.BaseView
-import com.ruiwenliu.kotlin.moudle.base.presenter.MvpPresenter
-import com.ruiwenliu.kotlin.moudle.base.presenter.WrapperPresenter
-import java.lang.reflect.ParameterizedType
+import kotlinx.android.synthetic.main.base_layout.*
 
-/*
-* @Author:      Amuser
-* @CreateDate:   2019-12-18 9:19
-*@Description: 
-*/
-abstract class BaseWrapperActivity<P : MvpPresenter<BaseView>> : AppCompatActivity(), BaseView {
-    protected var mPresenter: P? = null
-    private var mLoadingDialog: LoadingDialog? = null
+abstract class BaseWrapperActivity : AppCompatActivity() {
+
+    protected var mActivity: AppCompatActivity? = null
+    var mToast: Toast? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(getLayout())
-        intiView()
-        val type = this.javaClass.getGenericSuperclass() as ParameterizedType
-        // Class<? extends WrapperPresenter> presenterClass = (Class<? extends WrapperPresenter>) type.getActualTypeArguments()[0];
-        val presenterClass = type.actualTypeArguments[0] as Class<out WrapperPresenter<BaseView>>
-        try {
-            this.mPresenter = presenterClass.newInstance() as P
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: InstantiationException) {
-            e.printStackTrace()
+        processBeforeLayout()
+        setContentView(R.layout.base_layout)
+        mActivity = this
+        intiBaseView()
+        initView()
+    }
+
+
+    override fun onBackPressed() {
+        beforeFinish()
+        super.onBackPressed()
+    }
+
+    /**
+     * 处理创建布局之前操作
+     */
+    protected fun processBeforeLayout() {
+
+    }
+
+    abstract fun setLayout(): Int
+    abstract fun initView()
+    fun intiBaseView() {
+        base_title_view.setTitle("Base")
+        base_title_view.setChildClickListener(R.id.iv_title_left, ({
+            beforeFinish()
+            finish()
+        }))
+        base_frame_layout.addView(getLayoutInflater().inflate(setLayout(), null))
+    }
+
+    /**
+     * 按返回键之前操作
+     */
+    protected fun beforeFinish() {
+
+    }
+
+    /**
+     * 是否显示标题栏
+     */
+    protected fun showTitle(isShow: Boolean) {
+        if (isShow)
+            base_title_view.visibility = View.VISIBLE
+        else
+            base_title_view.visibility = View.GONE
+    }
+
+    protected fun  showToast(msg:String){
+        if (mToast == null) {
+            mToast = Toast.makeText(this.getApplicationContext(), "", Toast.LENGTH_SHORT)
         }
-
-        mPresenter?.attachView(this)
-        mLoadingDialog = createLoadingDialog();
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        onHideLoading()
-        mLoadingDialog = null
-        mPresenter?.detachView()
-        mPresenter = null
-    }
-
-    override fun onBeforeSuccess() {
-    }
-
-    override fun onShowLoading() {
-        Log.d("是否进来了弹窗", "========${mLoadingDialog?.isShowing}")
-        if(mLoadingDialog!=null && !mLoadingDialog?.isShowing!!){
-          mLoadingDialog?.show()
-        }
-
-    }
-
-    override fun onHideLoading() {
-        if (!isFinishing && mLoadingDialog?.isShowing()!!) {
-            runOnUiThread { mLoadingDialog?.dismiss() }
-        }
-    }
-
-    override fun onShowError(errorMsg: String?, errorType: Int?, position: Int?) {
-    }
-
-    abstract fun getLayout(): Int
-    abstract fun intiView()
-
-    protected fun createLoadingDialog(): LoadingDialog {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog(this, R.style.Alert_Dialog_Style)
-            mLoadingDialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            mLoadingDialog?.setCanceledOnTouchOutside(false)
-            mLoadingDialog?.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        }
-        return mLoadingDialog as LoadingDialog
-    }
-    fun  showToast(message:String){
-        Toast.makeText(this,message, Toast.LENGTH_SHORT).show()
+        mToast?.setText(msg)
     }
 }

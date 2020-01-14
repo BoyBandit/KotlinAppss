@@ -1,28 +1,29 @@
 package com.ruiwenliu.kotlin.moudle.ui
 
 import android.graphics.Rect
+import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ruiwenliu.kotlin.R
 import com.ruiwenliu.kotlin.moudle.ApiConfig
 import com.ruiwenliu.kotlin.moudle.MainPresenter
-import com.ruiwenliu.kotlin.moudle.base.BaseWrapperActivity
+import com.ruiwenliu.kotlin.moudle.base.BaseActivity
 import com.ruiwenliu.kotlin.moudle.base.bean.BaseBean
 import com.ruiwenliu.kotlin.moudle.ui.adapter.MenuAdapter
 import com.ruiwenliu.kotlin.moudle.ui.bean.MenuBean
 import com.ruiwenliu.kotlin.moudle.ui.bean.ProjectListBean
 import kotlinx.android.synthetic.main.activity_project_list.*
+import kotlinx.android.synthetic.main.base_layout.*
 
-class ProjectListActivity : BaseWrapperActivity<MainPresenter>() {
+class ProjectListActivity : BaseActivity<MainPresenter>() {
 
-
-
-    override fun getLayout(): Int {
+    override fun setLayout(): Int {
         return  R.layout.activity_project_list
     }
 
-    override fun intiView() {
+    override fun initView() {
+        base_title_view.setTitle("让我说点什么好")
         btn_data.setOnClickListener({
             getData()
             getProjectList()
@@ -34,6 +35,9 @@ class ProjectListActivity : BaseWrapperActivity<MainPresenter>() {
 //            menu_rv.smoothScrollBy(120,148)
         })
     }
+
+
+
 
     override fun <T : BaseBean> onShowResult(requestType: Int?, result: T) {
             when(requestType){
