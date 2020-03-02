@@ -26,11 +26,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<!--        <activity android:name=".moudle.ui.ListActivity"></activity>-->
+<!--        <activity android:name=".mvvm.MultiplelActivity"></activity>-->
+        <!-- <activity android:name=".moudle.ui.ListActivity"></activity> -->
         <!-- <activity android:name=".moudle.ui.ProjectListActivity"></activity> -->
-        <activity android:name=".moudle.ui.MainActivity" />
+<!--        <activity android:name=".moudle.ui.MainActivity" />-->
         <activity android:name=".moudle.ui.test.TestMvvm" />
-        <activity android:name=".moudle.ui.ProjectListActivity">
+        <activity android:name=".mvvm.MultiplelActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
